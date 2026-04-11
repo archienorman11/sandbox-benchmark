@@ -1,0 +1,105 @@
+# Firecracker API Calls
+#
+# These are the exact HTTP requests that the SDK makes over the Unix socket.
+# You can't run these from a REST client directly (they need --unix-socket),
+# but this documents the API contract.
+#
+# Start firecracker first:
+#   rm -f /tmp/fc-demo.sock
+#   firecracker --api-sock /tmp/fc-demo.sock --no-seccomp &
+#
+# Then use curl to send these requests:
+#   curl -s --unix-socket /tmp/fc-demo.sock http://localhost/<path>
+
+### 1. Set machine config (vCPUs + memory)
+PUT http://localhost/machine-config
+Content-Type: application/json
+
+{
+  "vcpu_count": 2,
+  "mem_size_mib": 512
+}
+
+### 2. Set boot source (kernel + args)
+PUT http://localhost/boot-source
+Content-Type: application/json
+
+{
+  "kernel_image_path": "/opt/fc/vmlinux",
+  "boot_args": "console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rw"
+}
+
+### 3. Attach root filesystem as virtio block device
+PUT http://localhost/drives/rootfs
+Content-Type: application/json
+
+{
+  "drive_id": "rootfs",
+  "path_on_host": "/opt/fc/rootfs.ext4",
+  "is_root_device": true,
+  "is_read_only": false
+}
+
+### 4. Configure logging
+PUT http://localhost/logger
+Content-Type: application/json
+
+{
+  "log_path": "/tmp/fc-demo.log",
+  "level": "Info",
+  "show_level": true,
+  "show_log_origin": true
+}
+
+### 5. Boot the VM (this is where KVM_RUN happens)
+PUT http://localhost/actions
+Content-Type: application/json
+
+{
+  "action_type": "InstanceStart"
+}
+
+### 6. Check machine config (while running)
+GET http://localhost/machine-config
+
+### 7. Check VM state (while running)
+GET http://localhost/vm
+
+### 8. Graceful shutdown (CtrlAltDel → guest init handles it)
+PUT http://localhost/actions
+Content-Type: application/json
+
+{
+  "action_type": "SendCtrlAltDel"
+}
+
+### --- Snapshot workflow (after VM is booted and ready) ---
+
+### 9. Pause the VM before snapshotting
+PATCH http://localhost/vm
+Content-Type: application/json
+
+{
+  "state": "Paused"
+}
+
+### 10. Create a full snapshot
+PUT http://localhost/snapshot/create
+Content-Type: application/json
+
+{
+  "snapshot_type": "Full",
+  "snapshot_path": "/tmp/fc-snapshot",
+  "mem_file_path": "/tmp/fc-memory"
+}
+
+### 11. Resume after snapshot (if you want to keep using this VM)
+PATCH http://localhost/vm
+Content-Type: application/json
+
+{
+  "state": "Resumed"
+}
+
+### --- To restore from snapshot, start a NEW firecracker process: ---
+# firecracker --restore-from-snapshot /tmp/fc-snapshot --api-sock /tmp/fc-restored.sock
