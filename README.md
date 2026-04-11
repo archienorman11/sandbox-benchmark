@@ -62,19 +62,29 @@ See [`configs/example.json`](configs/example.json) for all options:
 
 ## Results
 
-Measured on an AMD Ryzen 7 7700 (8C/16T), 64 GB RAM, Ubuntu 24.04, kernel 6.8.0, Firecracker v1.15.0.
+Measured on AMD Ryzen 7 7700 (8C/16T), 64 GB RAM, Ubuntu 24.04, kernel 6.8.0, Firecracker v1.15.0.
+Config: 2 vCPUs, 512 MiB RAM.
+
+### Cold Start Baseline (n=50)
 
 | Metric | p50 | p95 |
 |---|---|---|
-| Cold start | 19.31 ms | 19.31 ms |
-| Teardown | 18.75 ms | 18.75 ms |
+| Cold start | 19.16 ms | 19.56 ms |
+| Teardown | 16.70 ms | 27.02 ms |
 
-Raw timings across 3 iterations (ms):
+### Concurrent VM Spawning
 
-| Iteration | Cold Start | Teardown |
-|---|---|---|
-| 1 | 27.43 | 18.75 |
-| 2 | 19.31 | 16.65 |
-| 3 | 18.98 | 19.00 |
+<p align="center">
+  <img src="docs/concurrent-scaling.svg" alt="Concurrent VM cold-start scaling chart" width="680"/>
+</p>
 
-Iteration 1 is slightly higher due to initial system warm-up.
+| Concurrency | Cold Start p50 | Cold Start p95 | Wall Time |
+|---|---|---|---|
+| 5 | 20 ms | 20 ms | 51 ms |
+| 10 | 23 ms | 24 ms | 71 ms |
+| 20 | 50 ms | 57 ms | 98 ms |
+| 50 | 68 ms | 93 ms | 144 ms |
+| 100 | 151 ms | 192 ms | 257 ms |
+| 200 | 327 ms | 495 ms | 542 ms |
+
+Zero failures up to 200 concurrent VMs. Latency stays flat to c=10, then degrades linearly with CPU oversubscription. Even at c=200 (25x CPU oversubscription), all VMs boot under 500 ms. RAM (~120 VMs at 512 MiB each) is the practical limit for sustained workloads on this machine.

@@ -20,7 +20,7 @@ BENCH_ITERS ?= 3
 
 BENCH_CONCURRENCY ?= 5
 
-.PHONY: build build-linux sync sync-all remote-shell remote-check remote-setup remote-run remote-test remote-bench remote-bench-snapshot remote-bench-concurrent
+.PHONY: build build-linux sync sync-all remote-shell remote-check remote-setup remote-run remote-test remote-bench remote-bench-snapshot remote-bench-concurrent remote-bench-full
 
 build:
 	go build ./...
@@ -74,3 +74,22 @@ remote-bench-concurrent: check-remote
 
 remote-bench-all: check-remote
 	$(REMOTE_BASE) '$(REMOTE_CD) && ./bin/sandboxbench bench-all --config $(BENCH_CONFIG) -n $(BENCH_ITERS) -c $(BENCH_CONCURRENCY) $(BENCH_ARGS)'
+
+# Full P0 sweep: cold-start n=50, concurrent at c=5,10,20
+remote-bench-full: sync
+	@echo "==> Cold-start baseline (n=50)"
+	$(REMOTE_BASE) '$(REMOTE_CD) && ./bin/sandboxbench bench --config $(BENCH_CONFIG) -n 50 --results-dir results -l full'
+	@echo ""
+	@echo "==> Concurrent c=5"
+	$(REMOTE_BASE) '$(REMOTE_CD) && ./bin/sandboxbench bench-concurrent --config $(BENCH_CONFIG) -c 5 --results-dir results -l full'
+	@echo ""
+	@echo "==> Concurrent c=10"
+	$(REMOTE_BASE) '$(REMOTE_CD) && ./bin/sandboxbench bench-concurrent --config $(BENCH_CONFIG) -c 10 --results-dir results -l full'
+	@echo ""
+	@echo "==> Concurrent c=20"
+	$(REMOTE_BASE) '$(REMOTE_CD) && ./bin/sandboxbench bench-concurrent --config $(BENCH_CONFIG) -c 20 --results-dir results -l full'
+	@echo ""
+	@echo "==> Fetching results"
+	mkdir -p results
+	rsync -avz $(REMOTE):/home/$(REMOTE_USER)/$(REMOTE_DIR)/results/ results/
+	@echo "==> Done. Results in results/"

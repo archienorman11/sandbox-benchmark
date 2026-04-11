@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="p50fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="p95fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#f97316" stop-opacity="0.01"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="400" rx="8" fill="#fafafa" stroke="#e5e7eb" stroke-width="1"/>
+
+  <!-- Title -->
+  <text x="360" y="32" text-anchor="middle" font-size="15" font-weight="600" fill="#111827">Concurrent VM Cold-Start Latency</text>
+  <text x="360" y="50" text-anchor="middle" font-size="11" fill="#6b7280">Firecracker · 2 vCPUs · 512 MiB · Ryzen 7 7700 (8C/16T)</text>
+
+  <!-- Chart area: x=80..680 (600px), y=70..340 (270px) -->
+  <!-- Y axis: 0..550ms, X axis: 0..200 concurrency -->
+
+  <!-- Grid lines -->
+  <g stroke="#e5e7eb" stroke-width="0.5">
+    <line x1="80" y1="70" x2="680" y2="70"/>    <!-- 550ms -->
+    <line x1="80" y1="119" x2="680" y2="119"/>   <!-- 450ms -->
+    <line x1="80" y1="168" x2="680" y2="168"/>   <!-- 350ms -->
+    <line x1="80" y1="217" x2="680" y2="217"/>   <!-- 250ms -->
+    <line x1="80" y1="266" x2="680" y2="266"/>   <!-- 150ms -->
+    <line x1="80" y1="316" x2="680" y2="316"/>   <!-- 50ms -->
+    <line x1="80" y1="340" x2="680" y2="340"/>   <!-- 0ms -->
+  </g>
+
+  <!-- Y axis labels -->
+  <g font-size="10" fill="#6b7280" text-anchor="end">
+    <text x="72" y="73">550</text>
+    <text x="72" y="122">450</text>
+    <text x="72" y="171">350</text>
+    <text x="72" y="220">250</text>
+    <text x="72" y="269">150</text>
+    <text x="72" y="319">50</text>
+    <text x="72" y="343">0</text>
+  </g>
+  <text x="20" y="205" text-anchor="middle" font-size="11" fill="#6b7280" transform="rotate(-90 20 205)">Latency (ms)</text>
+
+  <!-- X axis labels -->
+  <!-- x = 80 + (concurrency/200)*600 -->
+  <g font-size="10" fill="#6b7280" text-anchor="middle">
+    <text x="95" y="358">5</text>     <!-- 80+15=95 -->
+    <text x="110" y="358">10</text>   <!-- 80+30=110 -->
+    <text x="140" y="358">20</text>   <!-- 80+60=140 -->
+    <text x="170" y="358">30</text>   <!-- 80+90=170 -->
+    <text x="230" y="358">50</text>   <!-- 80+150=230 -->
+    <text x="380" y="358">100</text>  <!-- 80+300=380 -->
+    <text x="530" y="358">150</text>  <!-- 80+450=530 -->
+    <text x="680" y="358">200</text>  <!-- 80+600=680 -->
+  </g>
+  <text x="380" y="385" text-anchor="middle" font-size="11" fill="#6b7280">Concurrent VMs</text>
+
+  <!-- Data points: x = 80 + (c/200)*600, y = 340 - (ms/550)*270 -->
+  <!-- p50: 20.17, 23.45, 50.09, 65.20, 68.08, 150.60, 221.82, 327.46 -->
+  <!-- p95: 20.21, 23.78, 56.56, 73.97, 92.96, 191.95, 292.85, 495.25 -->
+  <!-- wall: 51, 71, 98, 124, 144, 257, 350, 542 -->
+
+  <!-- p50 x,y coords:
+    5:   95,  330.1
+    10:  110, 328.5
+    20:  140, 315.4
+    30:  170, 308.0
+    50:  230, 306.6
+    100: 380, 266.0
+    150: 530, 231.1
+    200: 680, 179.2
+  -->
+
+  <!-- p95 x,y coords:
+    5:   95,  330.1
+    10:  110, 328.3
+    20:  140, 312.2
+    30:  170, 303.7
+    50:  230, 294.4
+    100: 380, 245.7
+    150: 530, 196.2
+    200: 680, 97.0
+  -->
+
+  <!-- wall time x,y coords:
+    5:   95,  315.0
+    10:  110, 305.2
+    20:  140, 291.9
+    30:  170, 279.1
+    50:  230, 269.3
+    100: 380, 213.8
+    150: 530, 168.2
+    200: 680, 73.7
+  -->
+
+  <!-- p95 area fill -->
+  <path d="M95,330.1 L110,328.3 L140,312.2 L170,303.7 L230,294.4 L380,245.7 L530,196.2 L680,97.0 L680,340 L95,340 Z" fill="url(#p95fill)"/>
+
+  <!-- p50 area fill -->
+  <path d="M95,330.1 L110,328.5 L140,315.4 L170,308.0 L230,306.6 L380,266.0 L530,231.1 L680,179.2 L680,340 L95,340 Z" fill="url(#p50fill)"/>
+
+  <!-- Wall time line -->
+  <polyline points="95,315.0 110,305.2 140,291.9 170,279.1 230,269.3 380,213.8 530,168.2 680,73.7" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="6,3" opacity="0.7"/>
+
+  <!-- p95 line -->
+  <polyline points="95,330.1 110,328.3 140,312.2 170,303.7 230,294.4 380,245.7 530,196.2 680,97.0" fill="none" stroke="#f97316" stroke-width="2.5"/>
+
+  <!-- p50 line -->
+  <polyline points="95,330.1 110,328.5 140,315.4 170,308.0 230,306.6 380,266.0 530,231.1 680,179.2" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+
+  <!-- Data point dots - p50 -->
+  <g fill="#3b82f6">
+    <circle cx="95"  cy="330.1" r="3.5"/>
+    <circle cx="110" cy="328.5" r="3.5"/>
+    <circle cx="140" cy="315.4" r="3.5"/>
+    <circle cx="170" cy="308.0" r="3.5"/>
+    <circle cx="230" cy="306.6" r="3.5"/>
+    <circle cx="380" cy="266.0" r="3.5"/>
+    <circle cx="530" cy="231.1" r="3.5"/>
+    <circle cx="680" cy="179.2" r="3.5"/>
+  </g>
+
+  <!-- Data point dots - p95 -->
+  <g fill="#f97316">
+    <circle cx="95"  cy="330.1" r="3.5"/>
+    <circle cx="110" cy="328.3" r="3.5"/>
+    <circle cx="140" cy="312.2" r="3.5"/>
+    <circle cx="170" cy="303.7" r="3.5"/>
+    <circle cx="230" cy="294.4" r="3.5"/>
+    <circle cx="380" cy="245.7" r="3.5"/>
+    <circle cx="530" cy="196.2" r="3.5"/>
+    <circle cx="680" cy="97.0"  r="3.5"/>
+  </g>
+
+  <!-- Data point dots - wall time -->
+  <g fill="#10b981">
+    <circle cx="95"  cy="315.0" r="3"/>
+    <circle cx="110" cy="305.2" r="3"/>
+    <circle cx="140" cy="291.9" r="3"/>
+    <circle cx="170" cy="279.1" r="3"/>
+    <circle cx="230" cy="269.3" r="3"/>
+    <circle cx="380" cy="213.8" r="3"/>
+    <circle cx="530" cy="168.2" r="3"/>
+    <circle cx="680" cy="73.7"  r="3"/>
+  </g>
+
+  <!-- Value labels on last data points -->
+  <text x="668" y="172" font-size="10" font-weight="600" fill="#3b82f6" text-anchor="end">327 ms</text>
+  <text x="668" y="90" font-size="10" font-weight="600" fill="#f97316" text-anchor="end">495 ms</text>
+  <text x="668" y="67" font-size="10" font-weight="600" fill="#10b981" text-anchor="end">542 ms</text>
+
+  <!-- Legend -->
+  <g transform="translate(110, 70)">
+    <line x1="0" y1="0" x2="20" y2="0" stroke="#3b82f6" stroke-width="2.5"/>
+    <circle cx="10" cy="0" r="3" fill="#3b82f6"/>
+    <text x="26" y="4" font-size="10" fill="#374151">p50</text>
+
+    <line x1="65" y1="0" x2="85" y2="0" stroke="#f97316" stroke-width="2.5"/>
+    <circle cx="75" cy="0" r="3" fill="#f97316"/>
+    <text x="91" y="4" font-size="10" fill="#374151">p95</text>
+
+    <line x1="125" y1="0" x2="145" y2="0" stroke="#10b981" stroke-width="2" stroke-dasharray="6,3"/>
+    <circle cx="135" cy="0" r="3" fill="#10b981"/>
+    <text x="151" y="4" font-size="10" fill="#374151">Wall time</text>
+  </g>
+
+  <!-- Annotation: CPU threshold -->
+  <line x1="80" y1="316" x2="680" y2="316" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,4" opacity="0.4"/>
+  <text x="682" y="319" font-size="9" fill="#ef4444" opacity="0.6">50 ms</text>
+</svg>

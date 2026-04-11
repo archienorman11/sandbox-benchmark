@@ -13,21 +13,40 @@
 | Firecracker | v1.15.0 |
 | Arch | amd64 |
 
-## Cold Start + Teardown (2026-04-11)
+**VM Config:** 2 vCPUs, 512 MiB RAM (`configs/example.json`)
 
-**Config:** `configs/example.json` | **Iterations:** 3
+## Cold Start Baseline (2026-04-11)
+
+**Iterations:** 50
 
 | Metric | p50 | p95 |
 |---|---|---|
-| Cold start | 19.31 ms | 19.31 ms |
-| Teardown | 18.75 ms | 18.75 ms |
+| Cold start | 19.16 ms | 19.56 ms |
+| Teardown | 16.70 ms | 27.02 ms |
 
-### Raw timings (ms)
+## Concurrent VM Spawning (2026-04-11)
 
-| Iteration | Cold Start | Teardown |
-|---|---|---|
-| 1 | 27.43 | 18.75 |
-| 2 | 19.31 | 16.65 |
-| 3 | 18.98 | 19.00 |
+<p align="center">
+  <img src="concurrent-scaling.svg" alt="Concurrent VM cold-start scaling chart" width="680"/>
+</p>
 
-Note: Iteration 1 cold start is higher due to initial system warm-up.
+| Concurrency | Cold Start p50 | Cold Start p95 | Wall Time | Failed |
+|---|---|---|---|---|
+| 5 | 20.17 ms | 20.21 ms | 51 ms | 0 |
+| 10 | 23.45 ms | 23.78 ms | 71 ms | 0 |
+| 20 | 50.09 ms | 56.56 ms | 98 ms | 0 |
+| 30 | 65.20 ms | 73.97 ms | 124 ms | 0 |
+| 50 | 68.08 ms | 92.96 ms | 144 ms | 0 |
+| 100 | 150.60 ms | 191.95 ms | 257 ms | 0 |
+| 150 | 221.82 ms | 292.85 ms | 350 ms | 0 |
+| 200 | 327.46 ms | 495.25 ms | 542 ms | 0 |
+
+### Observations
+
+- Single-VM cold start is remarkably consistent at ~19 ms (p50 vs p95 within 0.4 ms).
+- Teardown p95 (27 ms) is notably higher than p50 (16.7 ms), suggesting occasional process cleanup delays.
+- Concurrent cold start stays flat (~20 ms) up to c=10, then degrades roughly linearly with concurrency.
+- At c=200, p95 reaches ~495 ms — still under 500 ms even with 200 × 2 = 400 vCPUs on 16 threads (25x oversubscription).
+- Zero failures across all concurrency levels up to 200 VMs.
+- Wall time scales sub-linearly: 200 VMs finish in 542 ms total, vs 200 × 19 ms = 3.8s if spawned sequentially.
+- RAM is the true limit for steady-state packing: 200 × 512 MiB = 100 GB exceeds 64 GB physical RAM, so the kernel overcommits. For sustained workloads, ~120 VMs is the safe ceiling on this hardware.
