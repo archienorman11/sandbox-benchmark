@@ -1,0 +1,10 @@
+{
+  "firecracker_bin": "/usr/local/bin/firecracker",
+  "kernel_image": "/opt/fc/vmlinux",
+  "rootfs_path": "/opt/fc/rootfs.ext4",
+  "kernel_args": "reboot=k panic=1 pci=off root=/dev/vda rw console=ttyS0 quiet",
+  "vcpus": 2,
+  "mem_mib": 512,
+  "socket_path": "",
+  "state_path": "/tmp/sandboxbench-state.json"
+}
