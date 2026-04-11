@@ -1,0 +1,3 @@
+# Rsync merge filter (see rsync(1)). Extend to exclude large host-only trees under the synced directory.
+- /bin/
+- /.git/
