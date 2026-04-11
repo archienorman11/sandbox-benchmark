@@ -1,0 +1,25 @@
+# Build output
+/bin/
+/sandboxbench
+
+# Benchmark results
+/results/
+
+# Runtime
+*.sock
+*.log
+
+# Environment & local overrides
+.env
+Makefile.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
