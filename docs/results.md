@@ -41,6 +41,18 @@
 | 150 | 221.82 ms | 292.85 ms | 350 ms | 0 |
 | 200 | 327.46 ms | 495.25 ms | 542 ms | 0 |
 
+## Cold Start — Custom Devbox Image (2026-04-12)
+
+**Image:** `devbox-rootfs.ext4` (4 GiB, Ubuntu 24.04 + Node.js 22, pnpm, TypeScript, Vite React-TS) built via [web-sandbox](github.com/ayush6624/web-sandbox)
+**Iterations:** 50
+
+| Metric | p50 | p95 |
+|---|---|---|
+| Cold start | 19.12 ms | 19.67 ms |
+| Teardown | 18.08 ms | 28.35 ms |
+
+The 4× larger custom rootfs (4 GiB vs 1 GiB baseline) has no measurable impact on cold-start latency — Firecracker maps the block device lazily, so image size doesn't affect boot time.
+
 ### Observations
 
 - Single-VM cold start is remarkably consistent at ~19 ms (p50 vs p95 within 0.4 ms).
